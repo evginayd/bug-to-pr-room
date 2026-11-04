@@ -50,11 +50,17 @@ You need: [Switch Console](https://github.com/sandbox-quantum/switch#getting-sta
 2. **Check the demo app** works: `./scripts/setup.sh` (macOS/Linux) or `.\scripts\setup.ps1` (Windows).
 3. **Start Switch:** open Switch Console and start a local server. It comes with Mattermost, so no Slack workspace is needed.
 4. **Create the room:** in Console, import `agents/bug-to-pr.template.yaml` as a template and run it. Set `repo_url` to your fork's HTTPS URL.
-5. **Report a bug** in the new `#shop-bugs` channel. Some to try:
+5. **Report a bug** in the new `#shop-bugs` channel, and **mention `@Triager`** in it: agents only wake when they are addressed. Some to try:
    - "I put -3 mugs in my cart and the total went negative."
    - "SAVE10 on a cart with one sticker pack made the total -6.00."
    - "Removing something that isn't in my cart gives a server error."
    - "I clicked apply on SAVE10 three times and got 30 off."
+
+### Troubleshooting
+
+- **"Could not reach the server … timeout" when creating from the template.** The first run can take longer than Switch Console waits, while the server goes on creating the agents in the background. Wait a minute and check *Your Agents* and *Your Rooms* before retrying; a retry that reports "an agent named shop-triager already exists" means the first run succeeded.
+- **Agents answer in a thread.** Open the "replies" under your message to follow the hand-offs.
+- **Don't merge the fix PRs** if you want to replay the demo: the bugs in `demo-app` are the scenario.
 
 _TODO: confirm these steps on a clean machine and add screenshots._
 

@@ -19,16 +19,6 @@ params:
   repo_url:
     type: string
     description: HTTPS URL of this repository. Each agent works in its own clone of it.
-  provider:
-    type: provider
-    description: Which coding agent backs all three. The first one installed is chosen.
-    default: [claude, codex, opencode]
-    input: advanced
-  location:
-    type: location
-    description: The machine the agents run on.
-    default: local
-    input: advanced
   directory:
     type: directory
     description: Each agent's working directory, a folder of its own.
@@ -44,8 +34,8 @@ agents:
     display_name: Triager
     description: Reads every report in the room, classifies it and routes bugs
     addressing: anyone
-    provider: "{provider}"
-    location: "{location}"
+    provider: claude
+    location: local
     directory: "{directory}"
     repo: "{repo_url}"
     instructions: |
@@ -74,8 +64,8 @@ agents:
     display_name: Repro
     description: Proves a bug with the smallest failing test
     addressing: owner-agents
-    provider: "{provider}"
-    location: "{location}"
+    provider: claude
+    location: local
     directory: "{directory}"
     repo: "{repo_url}"
     instructions: |
@@ -102,8 +92,8 @@ agents:
     display_name: Fixer
     description: Fixes reproduced bugs and opens a pull request after a person approves
     addressing: anyone
-    provider: "{provider}"
-    location: "{location}"
+    provider: claude
+    location: local
     directory: "{directory}"
     repo: "{repo_url}"
     instructions: |
