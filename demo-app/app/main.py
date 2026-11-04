@@ -58,10 +58,16 @@ def _subtotal(cart: dict) -> Decimal:
     )
 
 
+def _apply_discount(subtotal: Decimal, rate: Decimal) -> Decimal:
+    """Return the discount amount for a percentage rate (e.g. 10 → 10%)."""
+    return subtotal * rate / 100
+
+
 def _total(cart: dict) -> Decimal:
-    total = _subtotal(cart)
+    subtotal = _subtotal(cart)
+    total = subtotal
     for code in cart["discounts"]:
-        total -= DISCOUNT_CODES[code]
+        total -= _apply_discount(subtotal, DISCOUNT_CODES[code])
     return total.quantize(Decimal("0.01"))
 
 
