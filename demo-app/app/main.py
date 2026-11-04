@@ -110,6 +110,8 @@ def add_item(cart_id: int, body: AddItem) -> dict:
     cart = _get_cart(cart_id)
     if body.product_id not in PRODUCTS:
         raise HTTPException(status_code=404, detail="Product not found")
+    if body.quantity < 1:
+        raise HTTPException(status_code=422, detail="Quantity must be at least 1")
     items = cart["items"]
     items[body.product_id] = items.get(body.product_id, 0) + body.quantity
     return _view(cart_id, cart)
