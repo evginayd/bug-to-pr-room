@@ -30,6 +30,17 @@ flowchart LR
     D -->|no, with direction| F
 ```
 
+### It already works
+
+Two bugs reported in the room in plain words have gone the whole way, each ending in a pull request that Fixer opened only after the reporter approved it in the thread:
+
+| Reported in chat | Pull request opened by Fixer |
+|---|---|
+| "I put -3 mugs in my cart and the total went negative." | [#1 fix: reject negative quantity on add_item](https://github.com/evginayd/bug-to-pr-room/pull/1) |
+| "SAVE10 on a cart with one sticker pack made the total -6.00." | [#3 fix: compute SAVE10 as percentage, not flat amount](https://github.com/evginayd/bug-to-pr-room/pull/3) |
+
+Each pull request carries the regression test Repro wrote, the fix, the result of the whole test suite and the ID of the room thread where it was approved.
+
 ## How it uses Switch
 
 Switch is what makes this a team workflow rather than three scripts:
@@ -40,14 +51,45 @@ Switch is what makes this a team workflow rather than three scripts:
 - **Addressing.** Anyone in the room can talk to Triager and Fixer; Repro only takes work from the team's own agents.
 - **One template.** [`agents/bug-to-pr.template.yaml`](agents/bug-to-pr.template.yaml) creates all three agents and the room in one step from Switch Console.
 
-_TODO: describe any further Switch features we use (tasks, decisions, knowledge) once they are in._
+- **Tasks.** Triager opens a Switch task for every bug before handing it on, so each report is tracked as work with a life of its own rather than one message lost in the scroll.
+- **A human gate the whole room can see.** Only a person's reply in the bug's thread counts as an approval, and the room instructions tell every agent that another agent's message never does. The approval, the decision and the pull request link all stay in the room's log next to the report that started it.
+
+```mermaid
+flowchart LR
+    subgraph Chat["Team chat: Mattermost, Slack, Teams, Discord"]
+        CH["shop-bugs channel"]
+    end
+    subgraph Server["Switch server, in Docker"]
+        ROOM["shop-bugs room<br/>shared log, instructions, tasks"]
+    end
+    subgraph Console["Switch Console, on your machine"]
+        T["Triager<br/>Claude Code"]
+        R["Repro<br/>Claude Code"]
+        F["Fixer<br/>Claude Code"]
+    end
+    CH <-->|bridge| ROOM
+    ROOM <-->|"agent protocol"| T
+    ROOM <-->|"agent protocol"| R
+    ROOM <-->|"agent protocol"| F
+    F -->|"push and open PR,<br/>after approval"| GH[("GitHub fork")]
+```
+
+Take Switch away and the three agents are back in three terminals: nobody on the team sees the hand-offs, and nothing stops a fix from shipping without a person saying yes.
+
+## Design choices
+
+- **Three agents, not one.** Splitting the work is what makes the result trustworthy. Repro may not change code or commit, so a reproduction can't quietly turn into a fix. Fixer may not approve its own work, so every change is seen by a person first.
+- **Proof before claims.** A room rule says every claim about the code comes with the command that was run and its output. Repro must post a failing test before anything is fixed, and Fixer posts the full test summary before asking for approval.
+- **Repro takes work only from agents.** Its addressing is `owner-agents`, so a report can't skip triage and land straight on the reproducer.
+- **One clone per agent.** Each agent works in its own directory with its own clone of the repository, so they never trip over each other's working tree.
+- **Nothing touches main.** Fixer works on a `fix/<bug>` branch, opens a pull request and stops there. Merging stays a person's job.
 
 ## Run it yourself
 
 You need: [Switch Console](https://github.com/sandbox-quantum/switch#getting-started), Docker, Python 3.11+, git, the [GitHub CLI](https://cli.github.com/) signed in (`gh auth login`), and Claude Code (or Codex / OpenCode) signed in.
 
 1. **Fork this repository** so the Fixer can open pull requests on your copy.
-2. **Check the demo app** works: `./scripts/setup.sh` (macOS/Linux) or `.\scripts\setup.ps1` (Windows).
+2. **Check the demo app** works: `./scripts/setup.sh` (macOS/Linux) or `.\scripts\setup.ps1` (Windows). It creates a virtual environment, installs the app and should end with `10 passed`.
 3. **Start Switch:** open Switch Console and start a local server. It comes with Mattermost, so no Slack workspace is needed.
 4. **Create the room:** in Console, import `agents/bug-to-pr.template.yaml` as a template and run it. Set `repo_url` to your fork's HTTPS URL.
 5. **Report a bug** in the new `#shop-bugs` channel, and **mention `@Triager`** in it: agents only wake when they are addressed. Some to try:
@@ -62,7 +104,7 @@ You need: [Switch Console](https://github.com/sandbox-quantum/switch#getting-sta
 - **Agents answer in a thread.** Open the "replies" under your message to follow the hand-offs.
 - **Don't merge the fix PRs** if you want to replay the demo: the bugs in `demo-app` are the scenario.
 
-_TODO: confirm these steps on a clean machine and add screenshots._
+_TODO: screenshots of each step, listed in [`docs/`](docs/README.md)._
 
 ## Repository layout
 
@@ -77,7 +119,13 @@ The demo app is deliberately small, with a few realistic bugs in it, so the whol
 
 ## Team
 
-_TODO: names and GitHub handles_
+Team Craftopiq:
+
+| Name | GitHub |
+|---|---|
+| Evgin Aydın | [@evginayd](https://github.com/evginayd) |
+| Zeynep Aslan | [@zeynepaslann404](https://github.com/zeynepaslann404) |
+| Can Turk | [@cantrk21](https://github.com/cantrk21) |
 
 ## License
 
