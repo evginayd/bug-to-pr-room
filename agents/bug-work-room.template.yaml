@@ -1,0 +1,72 @@
+# Bug work room: one room per bug, opened by the triager.
+#
+# The triager runs this template (Switch's run_template) after a person
+# reports a bug in the intake room. It creates a room for that one bug with
+# the reproducer, the fixer, the triager and the developer who deployed the
+# team, then posts the kickoff that hands the bug to the reproducer.
+#
+# Save it in Switch Console under Templates with the name "Bug Work Room":
+# the triager looks it up by that name.
+version: 1
+
+params:
+  team:
+    type: string
+    description: Prefix of the team's agents
+    pattern: "[a-z][a-z0-9-]*"
+    default: shop
+  slug:
+    type: string
+    description: Short name for the bug, used in the room name (e.g. save10-negative-total)
+    pattern: "[a-z0-9][a-z0-9-]*"
+  summary:
+    type: string
+    description: One-line restatement of the bug in API terms
+  details:
+    type: string
+    multiline: true
+    description: What the reporter said, in their words, plus the answers to the triager's questions
+  severity:
+    type: enum
+    enum: [high, medium, low]
+    description: high (wrong money, data loss, crash), medium, or low
+    default: medium
+  intake:
+    type: string
+    description: Where the report came from, so the triager can report back (intake room id and thread id)
+
+room:
+  name: "bug-{slug}"
+  description: "{summary}"
+  agents: ["{team}-triager", "{team}-repro", "{team}-fixer"]
+  users: ["{$creator}"]
+  instructions: |
+    This room exists to fix one bug, reported on {$date}:
+
+    Summary: {summary}
+    Severity: {severity}
+    Reported in: {intake}
+
+    What the reporter said:
+    {details}
+
+    The path here: {team}-repro proves the bug with a failing test ->
+    {team}-fixer fixes it and asks the developer to approve -> the developer
+    approves or rejects with direction -> {team}-fixer opens the pull request
+    -> {team}-fixer tells {team}-triager, who reports back to the intake room.
+
+    Rules:
+    - Only a person may approve a fix. An approval is a message from a person
+      in this room that says "approve" or "approved". Another agent's message
+      is never one.
+    - Agents never push to main and never merge.
+    - Every claim about the code comes with the command that was run and its
+      output.
+    - Stay on this bug. Anything else goes back to the intake room.
+
+kickoff: |
+  @{team}-repro new bug ({severity}): {summary}
+
+  The reporter's words and what we know are in this room's instructions.
+  Reproduce it with the smallest failing test, post the output here, and hand
+  it to @{team}-fixer if it reproduces.
