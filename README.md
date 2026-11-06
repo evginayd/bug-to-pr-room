@@ -54,6 +54,50 @@ Bugs reported in plain words have gone the whole way, each ending in a pull requ
 
 Each pull request carries the regression test Repro wrote, the fix, the result of the whole test suite and the room where it was approved.
 
+### See it run
+
+The third bug above, step by step, as it happened in Mattermost.
+
+**1. Someone from support reports it in plain words** in `#shop-bugs`:
+
+![A plain-words report mentioning @Triager](docs/screenshots/03-report.png)
+
+**2. Triager explains it back without jargon** and says a developer and two agents are on it in a separate room:
+
+![Triager's reply to the reporter](docs/screenshots/04-triage.png)
+
+**3. Triager opens a work room for the bug.** Switch posts the kickoff on Triager's behalf, and Repro and Fixer start:
+
+![The bug-discount-applied-multiple-times room and its kickoff](docs/screenshots/05-work-room.png)
+
+**4. Repro proves it** with a failing test: the second `SAVE10` takes the total from 90.00 to 80.00. It names the function at fault and hands over to Fixer:
+
+![Repro's failing test and pytest output](docs/screenshots/06-repro.png)
+
+**5. Fixer fixes it and asks the developer.** The suite is green and nothing ships until a person says so:
+
+![Fixer's diff, test summary and approval](docs/screenshots/08-approval.png)
+
+When the developer disagrees, Fixer follows their direction and asks again. Here, on the `SAVE10` bug, the first fix was rejected and redone as a helper function with a second test:
+
+![A rejected fix, redone as asked](docs/screenshots/07-rejection.png)
+
+**6. The pull request,** with the regression test, the green suite and the work room it came from:
+
+![Pull request #6](docs/screenshots/09-pull-request.png)
+
+**7. Triager goes back to the reporter** in their thread, in plain words, with the link:
+
+![Triager's "it's fixed" reply](docs/screenshots/10-reported-back.png)
+
+**8. And writes it down** in the intake room's *Known issues* document:
+
+![The Known issues document](docs/screenshots/11-known-issues.png)
+
+**9. So the next report of the same bug is recognised.** No new room, no repeated work, just the answer:
+
+![A second report answered with the existing fix](docs/screenshots/12-duplicate.png)
+
 ## How it uses Switch
 
 Switch is what makes this a team workflow rather than three scripts:
@@ -113,6 +157,13 @@ You need: [Switch Console](https://github.com/sandbox-quantum/switch#getting-sta
 2. **Check the demo app** works: `./scripts/setup.sh` (macOS/Linux) or `.\scripts\setup.ps1` (Windows). It creates a virtual environment, installs the app and should end with `10 passed`.
 3. **Start Switch:** open Switch Console and start a local server. It comes with Mattermost, so no Slack workspace is needed.
 4. **Create the team:** in Console, import `agents/bug-to-pr.template.yaml` as a template and run it. Set `repo_url` to your fork's HTTPS URL.
+
+   ![The team template's form in Switch Console](docs/screenshots/01-console-template.png)
+
+   When it has run, the three agents are in *Your Agents* and the room is under *Rooms*:
+
+   ![Your Agents after the template ran](docs/screenshots/02-agents-and-room.png)
+
 5. **Save the work-room template:** import `agents/bug-work-room.template.yaml` and save it with the name **Bug Work Room** (Triager finds it by that name). Don't run it yourself.
 6. **Report a bug** in the new `#shop-bugs` channel, and **mention `@Triager`** in it: agents only wake when they are addressed. Some to try:
    - "I put -3 mugs in my cart and the total went negative."
@@ -126,8 +177,6 @@ You need: [Switch Console](https://github.com/sandbox-quantum/switch#getting-sta
 - **Agents answer in a thread.** Open the "replies" under your message to follow the hand-offs.
 - **Where is *Known issues*?** It is a Switch room document, not a chat file, so it doesn't show under the channel's files. Ask `@Triager` to paste it.
 - **Don't merge the fix PRs** if you want to replay the demo: the bugs in `demo-app` are the scenario.
-
-_TODO: screenshots of each step, listed in [`docs/`](docs/README.md)._
 
 ## Repository layout
 
