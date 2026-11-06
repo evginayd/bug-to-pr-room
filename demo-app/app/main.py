@@ -139,6 +139,8 @@ def apply_discount(cart_id: int, body: ApplyDiscount) -> dict:
     code = body.code.upper()
     if code not in DISCOUNT_CODES:
         raise HTTPException(status_code=404, detail="Unknown discount code")
+    if code in cart["discounts"]:
+        raise HTTPException(status_code=409, detail="Discount code already applied")
     cart["discounts"].append(code)
     return _view(cart_id, cart)
 
