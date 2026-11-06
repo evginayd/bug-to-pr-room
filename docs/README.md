@@ -1,8 +1,8 @@
 # docs
 
-Screenshots for the README go here, in `docs/screenshots/`. The architecture diagrams are drawn in Mermaid in the main [README](../README.md#how-it-uses-switch), so they stay in step with the text.
+Screenshots used in the README, in `docs/screenshots/`. The architecture diagrams are drawn in Mermaid in the main [README](../README.md#how-it-uses-switch), so they stay in step with the text.
 
-Shots to take, one per step of the flow:
+One per step of the flow:
 
 | File | What it shows |
 |---|---|
