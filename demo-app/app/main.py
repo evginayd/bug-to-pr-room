@@ -129,6 +129,8 @@ def update_item(cart_id: int, product_id: str, body: UpdateItem) -> dict:
 @app.delete("/carts/{cart_id}/items/{product_id}")
 def remove_item(cart_id: int, product_id: str) -> dict:
     cart = _get_cart(cart_id)
+    if product_id not in cart["items"]:
+        raise HTTPException(status_code=404, detail="Product not in cart")
     del cart["items"][product_id]
     return _view(cart_id, cart)
 
