@@ -4,7 +4,9 @@
 
 Built for the [Flip the Switch hackathon](https://www.wemakedevs.org/hackathons/switch) (Track 1: Best Business Workflow).
 
-**Demo video:** _TODO: link_
+**Demo video:** [youtu.be/6FgfkqVnXWk](https://youtu.be/6FgfkqVnXWk) (under 3 minutes)
+
+[![Watch the demo](https://img.youtube.com/vi/6FgfkqVnXWk/hqdefault.jpg)](https://youtu.be/6FgfkqVnXWk)
 
 ## The problem
 
@@ -51,6 +53,7 @@ Bugs reported in plain words have gone the whole way, each ending in a pull requ
 | "I added one sticker pack (4.00) and applied SAVE10, and the total became -6.00." | First fix **rejected** with direction; Fixer redid it as asked | [#3 fix: compute SAVE10 as percentage, not flat amount](https://github.com/evginayd/bug-to-pr-room/pull/3) |
 | "A customer says they applied the discount code three times and paid much less than they should." | Triager opened the work room `bug-discount-applied-multiple-times`, reported back in plain words and wrote *Known issues* | [#6 Fix: reject duplicate discount code with 409](https://github.com/evginayd/bug-to-pr-room/pull/6) |
 | "Another customer says the discount was applied twice and their total was way too low." | Recognised as the same bug from *Known issues*: no new room, the reporter got the PR link | — |
+| Zeynep, from support: "A customer says they got an error page when they tried to remove something from their cart." *(recorded for the demo video)* | Triager asked one question and opened `bug-remove-item-not-in-cart-crash`; the developer **rejected** the first fix and asked for a test for removing the same item twice; Fixer added it; Triager reported back and Can's repeat report was recognised | [#8 Fix remove-item returning 500 instead of 404 when product not in cart](https://github.com/evginayd/bug-to-pr-room/pull/8) |
 
 Each pull request carries the regression test Repro wrote, the fix, the result of the whole test suite and the room where it was approved.
 
