@@ -43,19 +43,23 @@ triager/
     rules.py          business rules from demo-app/app/main.py's docstring
     state.py          per-report state machine, persisted in SQLite
     switch_client.py  WebSocket, heartbeat, resume from cursor, HTTP ops
-    agent.py          the Claude API tool-use loop
-    tools.py          the small tool set the model is allowed to call
+    decision.py       one structured-output Claude API call per decision
+    agent.py          turns events into decisions and decisions into Switch operations
   tests/
 evals/
   cases.jsonl         ~30 reports with expected decisions
   run_eval.py         scores the triage core against a fake Switch
 ```
 
-**The model decides, code acts.** The model's job ends with one structured
-call, `submit_triage`:
+**The model decides, code acts.** The model gets no tools at all. Code gathers
+the context (business rules, the *Known issues* document, the report and the
+reporter's answers) and the model returns one decision, its shape enforced by
+the API's JSON-schema output (`claude-opus-5-5` at low effort, with
+server-side refusal fallback):
 
 ```json
-{ "kind": "bug | question | feature",
+{ "kind": "bug | question | feature | unclear",
+  "reply": "what the reporter reads",
   "severity": "high | medium | low",
   "slug": "save10-negative-total",
   "summary": "POST /carts/{id}/discount ...",
@@ -88,9 +92,9 @@ README as a table across prompt versions.
 
 | # | Step | Estimate |
 |---|---|---|
-| 1 | `v2` branch, `triager/` package, plan | 0.5 day |
-| 2 | `switch_client.py`: connect, heartbeat, reconnect, ops; tests against a fake server | 1-2 days |
-| 3 | Triage core: tools, `submit_triage`, state machine, Fixer hand-back | 2 days |
+| 1 | `v2` branch, `triager/` package, plan | done |
+| 2 | `switch_client.py`: connect, heartbeat, reconnect, ops; tests against a fake server | done |
+| 3 | Triage core: structured decision, state machine, Fixer hand-back | done (not yet run against a live server) |
 | 4 | Eval set and runner, prompt iterations | 1-2 days |
 | 5 | Register the agent in Switch, v2 template (a template can use an existing agent), README "v1 vs v2", demo | 1 day |
 

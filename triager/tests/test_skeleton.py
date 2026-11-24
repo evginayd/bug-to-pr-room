@@ -13,6 +13,7 @@ ENV = {
     "SWITCH_AGENT_ID": "agent-1",
     "SWITCH_API_TOKEN": "test-token",
     "ANTHROPIC_API_KEY": "test-key",
+    "TRIAGER_INTAKE_ROOM_ID": "intake",
 }
 
 
@@ -26,7 +27,7 @@ def test_rules_are_read_from_the_demo_app():
 def test_config_reads_env_and_hides_secrets():
     config = Config.from_env(ENV)
     assert config.switch_endpoint == "http://localhost:8000"
-    assert config.model == "claude-sonnet-5-5"
+    assert config.model == "claude-opus-5-5"
     assert "test-token" not in repr(config)
     assert "test-key" not in repr(config)
 
